@@ -1,19 +1,36 @@
-const express = require("express")
+import express from "express";
+import 'dotenv/config'
+import { default as imagesRouter } from './api/images/index.js';
+
 const app = express()
-const mustacheExpress = require("mustache-express");
+const PORT = parseInt(process.env.PORT) || 3000;
+const { HOST } = process.env;
 
-// Theme layout
-app.use(express.static("theme"))
- 
-// View engine - Mustache
-app.set('views', `${__dirname}/views`);
-app.set("view engine", "mustache")
-app.engine('mustache', mustacheExpress());
+// Allow cross-origin request from https://cozyearth.com
+// app.use(
+// 	"/api",
+// 	cors({
+// 		origin: "https://cozyearth.com",
+// 		methods: "GET, POST, PUT, DELETE",
+// 	})
+// );
 
-// Routes
-app.get("/", (req, res) => {
-    res.render("index")
-})
+// app.use(function(req, res, next) {
+//     res.header('Access-Control-Allow-Origin', '*')
+//     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+//     res.header('Access-Control-Allow-Headers', 'Content-Type')
+//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-Udundi-Access-Token, Content-Type, Accept')
+//     next()
+//   })
 
-// Port listener and hot reloading
-app.listen(3000)
+// Public api endpoints
+app.use("/api/image/", imagesRouter);
+
+// Port listener
+try {
+	app.listen(PORT, () => {
+		console.log(`Running on ${HOST}:${PORT}`);
+	});
+} catch (error) {
+	console.error("Unable to connect\n", error);
+}
